@@ -25,7 +25,8 @@ def capture_screenshot():
         
         # Define the paths
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        filename = os.path.join(base_dir, 'screenshot.png')
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        filename = os.path.join(base_dir, f'screenshot_{timestamp}.png')
 
         # Save the screenshot
         with open(filename, 'wb') as f:
@@ -42,7 +43,7 @@ def capture_screenshot():
         bottom = height
         
         cropped_image = image.crop((left, top, right, bottom))
-        cropped_filename = os.path.join(base_dir, 'cropped_screenshot.png')
+        cropped_filename = os.path.join(base_dir, f'cropped_screenshot_{timestamp}.png')
         cropped_image.save(cropped_filename)
         
         # Print a message indicating success
