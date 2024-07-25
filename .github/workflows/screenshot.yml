@@ -37,8 +37,29 @@ jobs:
     - name: Run screenshot script
       run: python capture_screenshot.py
 
-    - name: Upload screenshot
-      uses: actions/upload-artifact@v2
-      with:
-        name: screenshot
-        path: screenshot_*.png
+    - name: Install gdrive
+      run: |
+        wget -O /tmp/gdrive https://github.com/prasmussen/gdrive/releases/download/2.1.0/gdrive-linux-x64
+        chmod +x /tmp/gdrive
+        sudo mv /tmp/gdrive /usr/local/bin/gdrive
+
+    - name: Configure gdrive with service account
+      env:
+        GDRIVE_SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "${GDRIVE_SERVICE_ACCOUNT_KEY}" > /tmp/service-account.json
+        gdrive about --service-account /tmp/service-account.json
+
+    - name: Upload screenshot to Google Drive
+      env:
+        GDRIVE_SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "${GDRIVE_SERVICE_ACCOUNT_KEY}" > /tmp/service-account.json
+        gdrive upload --service-account /tmp/service-account.json --parent <your-google-drive-folder-id> screenshot.png
+
+    - name: Upload cropped screenshot to Google Drive
+      env:
+        GDRIVE_SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "${GDRIVE_SERVICE_ACCOUNT_KEY}" > /tmp/service-account.json
+        gdrive upload --service-account /tmp/service-account.json --parent <your-google-drive-folder-id> cropped_screenshot.png
